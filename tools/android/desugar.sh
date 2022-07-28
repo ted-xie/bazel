@@ -17,39 +17,20 @@
 # jdk.internal.lambda.dumpProxyClasses and configures Java 8 library rewriting
 # through additional flags.
 
-# exit on errors and uninitialized variables
-set -eu
+## exit on errors and uninitialized variables
+#set -eu
+# --- begin runfiles.bash initialization v2 ---
+# Copy-pasted from the Bazel Bash runfiles library v2.
+set -uo pipefail; f=bazel_tools/tools/bash/runfiles/runfiles.bash
+source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
+  source "$(grep -sm1 "^$f " "${RUNFILES_MANIFEST_FILE:-/dev/null}" | cut -f2- -d' ')" 2>/dev/null || \
+  source "$0.runfiles/$f" 2>/dev/null || \
+  source "$(grep -sm1 "^$f " "$0.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/null || \
+  source "$(grep -sm1 "^$f " "$0.exe.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/null || \
+  { echo>&2 "ERROR: cannot find $f"; exit 1; }; f=; set -e
+# --- end runfiles.bash initialization v2 ---
 
-RUNFILES="${RUNFILES:-$0.runfiles}"
-RUNFILES_MANIFEST_FILE="${RUNFILES_MANIFEST_FILE:-$RUNFILES/MANIFEST}"
-
-IS_WINDOWS=false
-case "$(uname | tr [:upper:] [:lower:])" in
-msys*|mingw*|cygwin*)
-  IS_WINDOWS=true
-esac
-
-if "$IS_WINDOWS" && ! type rlocation &> /dev/null; then
-  function rlocation() {
-    # Use 'sed' instead of 'awk', so if the absolute path ($2) has spaces, it
-    # will be printed completely.
-    local result="$(grep "$1" "${RUNFILES_MANIFEST_FILE}" | head -1)"
-    # If the entry has a space, it is a mapping from a runfiles-path to absolute
-    # path, otherwise it resolves to itself.
-    echo "$result" | grep -q " " \
-        && echo "$result" | sed 's/^[^ ]* //' \
-        || echo "$result"
-  }
-fi
-
-# Find script to call:
-#   Windows (in MANIFEST):  <repository_name>/<path/to>/tool
-#   Linux/MacOS (symlink):  ${RUNFILES}/<repository_name>/<path/to>/tool
-if "$IS_WINDOWS"; then
-  DESUGAR="$(rlocation "[^/]*/src/tools/android/java/com/google/devtools/build/android/desugar/Desugar")"
-else
-  DESUGAR="$(find "${RUNFILES}" -path "*/src/tools/android/java/com/google/devtools/build/android/desugar/Desugar" | head -1)"
-fi
+DESUGAR="$(rlocation "[^/]*/src/tools/android/java/com/google/devtools/build/android/desugar/Desugar")"
 
 readonly TMPDIR="$(mktemp -d)"
 trap "rm -rf ${TMPDIR}" EXIT
