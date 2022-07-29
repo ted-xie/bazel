@@ -17,8 +17,8 @@
 # jdk.internal.lambda.dumpProxyClasses and configures Java 8 library rewriting
 # through additional flags.
 
-## exit on errors and uninitialized variables
-#set -eu
+RUNFILES="${RUNFILES:-$0.runfiles}"
+export JAVA_RUNFILES=$RUNFILES
 # --- begin runfiles.bash initialization v2 ---
 # Copy-pasted from the Bazel Bash runfiles library v2.
 set -uo pipefail; f=bazel_tools/tools/bash/runfiles/runfiles.bash
