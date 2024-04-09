@@ -447,6 +447,10 @@ def UploadDexes(adb, execroot, app_dir, temp_dir, dexmanifest, full_install):
   # Delete the dexes that are not in the new manifest
   adb.DeleteMultiple(targetpath.join(dex_dir, dex) for dex in dexes_to_delete)
 
+  # Set proper permissions
+  for local, _ in files_to_push:
+      os.chmod(local, 0o440)
+
   # Upload all the files.
   upload_walltime_start = time.time()
   fs = [adb.Push(local, remote) for local, remote in files_to_push]
