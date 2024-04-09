@@ -12,9 +12,7 @@ public class MainActivity extends AppCompatActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    Log.v("Bazel", "Hello, Android");
+    Log.v("Bazel", "Hello, Android 2");
     Log.v("Bazel", "Lib says: " + Lib.message());
-    System.loadLibrary("hello_world");
-    Log.v("Bazel", "JNI says: " + Jni.hello());
   }
 }
